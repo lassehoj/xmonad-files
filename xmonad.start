@@ -1,0 +1,41 @@
+#!/bin/bash
+
+xrdb -merge .Xresources
+
+feh --bg-scale /home/lasse/Pictures/Wallpapers/shuttle-launch.jpg &
+
+# remove caps lock
+xmodmap -e "remove Lock = Caps_Lock"
+xmodmap -e "keysym Caps_Lock = Control_L"
+xmodmap -e "add Control = Control_L"
+
+eval $(gnome-keyring-daemon --start)
+export GNOME_KEYRING_PID
+export GNOME_KEYRING_SOCKET
+export SSH_AUTH_SOCK="$GNOME_KEYRING_CONTROL/ssh"
+
+seahorse-daemon &
+
+if [ -x /usr/bin/gnome-power-manager ] ; then
+  # sleep 1
+  gnome-power-manager &
+fi
+
+if [ -x /usr/bin/nm-applet ] ; then
+  nm-applet --sm-disable &
+fi
+
+if [ -x /usr/bin/gnome-volume-control-applet ] ; then
+  # sleep 1
+  gnome-volume-control-applet &
+fi
+
+
+google-chrome &
+emacs --daemon &
+gvim &
+emacsclient -c &
+dropbox start &
+trayer --edge top --align right --SetDockType true --SetPartialStrut true --widthtype request --expand true --height 14 --tint 0x000000 &
+
+exec xmonad
